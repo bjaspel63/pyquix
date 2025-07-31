@@ -196,6 +196,43 @@ button.click-animate {
   cursor: default;
 }
 
+/* Swipe animations */
+@keyframes slideOutLeft {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-100%) scale(0.8); opacity: 0; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%) scale(0.8); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(100%) scale(0.8); opacity: 0; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(-100%) scale(0.8); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.flashcard-anim-out-left {
+  animation: slideOutLeft 0.4s forwards ease-in;
+}
+
+.flashcard-anim-in-right {
+  animation: slideInRight 0.4s forwards ease-out;
+}
+
+.flashcard-anim-out-right {
+  animation: slideOutRight 0.4s forwards ease-in;
+}
+
+.flashcard-anim-in-left {
+  animation: slideInLeft 0.4s forwards ease-out;
+}
+
 
 /* 📱 Mobile adjustments */
 @media (max-width: 480px) {
