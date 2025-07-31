@@ -233,6 +233,43 @@ button.click-animate {
   animation: slideInLeft 0.4s forwards ease-out;
 }
 
+/* Default (portrait) layout */
+#app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+}
+
+/* Landscape mode layout */
+@media (orientation: landscape) {
+  #app-container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px; /* space between sections */
+    padding: 20px 40px;
+  }
+  
+  #flashcard {
+    width: 60vw;    /* wider card */
+    max-width: 600px;
+    height: auto;   /* maintain aspect ratio */
+  }
+
+  #controls {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 20px;
+    min-width: 200px;
+  }
+
+  #progress-counter {
+    margin-top: 20px;
+  }
+}
+
 
 /* 📱 Mobile adjustments */
 @media (max-width: 480px) {
