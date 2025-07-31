@@ -20,6 +20,29 @@ if ('serviceWorker' in navigator) {
 const flipSound = new Audio('flip-sound.mp3'); 
 const achievementSound = new Audio('achievement-sound.mp3'); 
 
+// Animate card change with slide left/right animations
+function animateCardChange(direction, newIndex) {
+  const animOutClass = direction === 'left' ? 'flashcard-anim-out-left' : 'flashcard-anim-out-right';
+  const animInClass = direction === 'left' ? 'flashcard-anim-in-left' : 'flashcard-anim-in-right';
+
+  flashcard.classList.add(animOutClass);
+
+  flashcard.addEventListener('animationend', function handleOut() {
+    flashcard.removeEventListener('animationend', handleOut);
+
+    currentIndex = newIndex;
+    showCard(currentIndex);
+
+    flashcard.classList.remove(animOutClass);
+    flashcard.classList.add(animInClass);
+
+    flashcard.addEventListener('animationend', function handleIn() {
+      flashcard.removeEventListener('animationend', handleIn);
+      flashcard.classList.remove(animInClass);
+    }, { once: true });
+  }, { once: true });
+}
+
 // --- LocalStorage Helpers ---
 function saveProgress() {
   localStorage.setItem("pyquix-progress", JSON.stringify({
@@ -135,14 +158,15 @@ const shuffleBtn = document.getElementById("shuffle");
   });
 });
 
+// UPDATED: Use animateCardChange on navigation buttons
 nextBtn.addEventListener("click", () => {
-  currentIndex = (currentIndex + 1) % filteredCards.length;
-  showCard(currentIndex);
+  const newIndex = (currentIndex + 1) % filteredCards.length;
+  animateCardChange('left', newIndex);
 });
 
 prevBtn.addEventListener("click", () => {
-  currentIndex = (currentIndex - 1 + filteredCards.length) % filteredCards.length;
-  showCard(currentIndex);
+  const newIndex = (currentIndex - 1 + filteredCards.length) % filteredCards.length;
+  animateCardChange('right', newIndex);
 });
 
 shuffleBtn.addEventListener("click", () => {
@@ -212,7 +236,6 @@ fetch("python_flashcards.json")
     document.getElementById("card-question").innerText = "⚠ Could not load flashcards";
   });
 
-
 // --- Swipe support for mobile ---
 
 let touchStartX = 0;
@@ -238,13 +261,13 @@ flashcard.addEventListener("touchend", e => {
   // Ignore vertical swipes more than horizontal
   if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeThreshold) {
     if (diffX > 0) {
-      // Swipe right → previous card
-      currentIndex = (currentIndex - 1 + filteredCards.length) % filteredCards.length;
-      showCard(currentIndex);
+      // Swipe right → previous card with animation
+      const newIndex = (currentIndex - 1 + filteredCards.length) % filteredCards.length;
+      animateCardChange('right', newIndex);
     } else {
-      // Swipe left → next card
-      currentIndex = (currentIndex + 1) % filteredCards.length;
-      showCard(currentIndex);
+      // Swipe left → next card with animation
+      const newIndex = (currentIndex + 1) % filteredCards.length;
+      animateCardChange('left', newIndex);
     }
   }
 }, {passive: true});
@@ -259,13 +282,17 @@ document.addEventListener("keydown", (e) => {
   switch (e.key) {
     case "ArrowRight":
       e.preventDefault();
-      currentIndex = (currentIndex + 1) % filteredCards.length;
-      showCard(currentIndex);
+      {
+        const newIndex = (currentIndex + 1) % filteredCards.length;
+        animateCardChange('left', newIndex);
+      }
       break;
     case "ArrowLeft":
       e.preventDefault();
-      currentIndex = (currentIndex - 1 + filteredCards.length) % filteredCards.length;
-      showCard(currentIndex);
+      {
+        const newIndex = (currentIndex - 1 + filteredCards.length) % filteredCards.length;
+        animateCardChange('right', newIndex);
+      }
       break;
     case " ":
     case "Enter":
