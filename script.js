@@ -4,6 +4,8 @@ let currentIndex = 0;
 let viewedCount = 0;
 let hasShuffled = false;
 
+let bookmarkedIds = new Set(); // Store bookmarked card IDs
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
@@ -19,6 +21,21 @@ if ('serviceWorker' in navigator) {
 // Load sounds
 const flipSound = new Audio('flip-sound.mp3'); 
 const achievementSound = new Audio('achievement-sound.mp3'); 
+
+// Elements
+const flashcard = document.getElementById("flashcard");
+const bookmarkBtn = document.createElement("button");
+bookmarkBtn.id = "bookmark-btn";
+bookmarkBtn.title = "Bookmark this card";
+bookmarkBtn.innerHTML = "♡"; // empty star
+flashcard.appendChild(bookmarkBtn);
+
+const showBookmarksBtn = document.getElementById('show-bookmarks-btn');
+const closeBookmarksBtn = document.getElementById('close-bookmarks-btn');
+const bookmarksContainer = document.getElementById('bookmarks-container');
+const bookmarkedCardsList = document.getElementById('bookmarked-cards-list');
+const controlsDiv = document.querySelector('.controls');
+const progressCounter = document.getElementById('progress-counter');
 
 // Animate card change with slide left/right animations
 function animateCardChange(direction, newIndex) {
@@ -44,11 +61,13 @@ function animateCardChange(direction, newIndex) {
 }
 
 // --- LocalStorage Helpers ---
+
 function saveProgress() {
   localStorage.setItem("pyquix-progress", JSON.stringify({
     viewedCount,
     currentIndex,
-    selectedCategory: categorySelect.value
+    selectedCategory: categorySelect.value,
+    bookmarkedIds: Array.from(bookmarkedIds),
   }));
 }
 
@@ -59,6 +78,7 @@ function loadProgress() {
       const data = JSON.parse(saved);
       viewedCount = data.viewedCount || 0;
       currentIndex = data.currentIndex || 0;
+      bookmarkedIds = new Set(data.bookmarkedIds || []);
       return data.selectedCategory || "all";
     } catch (e) {
       console.error("Error parsing saved progress:", e);
@@ -109,6 +129,20 @@ function renderDifficultyStars(difficulty) {
   starContainer.textContent = filledStars + emptyStars;
 }
 
+// Update bookmark button UI depending on current card
+function updateBookmarkButton() {
+  const card = filteredCards[currentIndex];
+  if (!card) return;
+
+  if (bookmarkedIds.has(card.id)) {
+    bookmarkBtn.classList.add("bookmarked");
+    bookmarkBtn.innerHTML = "♥"; // filled star
+  } else {
+    bookmarkBtn.classList.remove("bookmarked");
+    bookmarkBtn.innerHTML = "♡"; // empty star
+  }
+}
+
 // Show the card at the given index
 function showCard(index) {
   if (!filteredCards.length) return;
@@ -116,7 +150,7 @@ function showCard(index) {
   document.getElementById("card-question").innerHTML = card.q;
   document.getElementById("card-answer").innerHTML = card.a;
   document.getElementById("card-category").innerText = card.cat || "General";
-  document.getElementById("flashcard").classList.remove("flipped");
+  flashcard.classList.remove("flipped");
 
   renderDifficultyStars(card.difficulty);
 
@@ -128,13 +162,17 @@ function showCard(index) {
   document.getElementById("progress-counter").innerText = 
     `Card ${viewedCount} of ${filteredCards.length}`;
 
+  updateBookmarkButton();  // Update bookmark UI on card change
+
   checkAchievements();
   saveProgress(); // 🔹 save after each card shown
 }
 
 // Flip logic with sound and bounce animation
-const flashcard = document.getElementById("flashcard");
-flashcard.addEventListener("click", () => {
+flashcard.addEventListener("click", (e) => {
+  // Avoid toggling flip when clicking bookmark button
+  if (e.target === bookmarkBtn) return;
+
   flipSound.play();
   flashcard.classList.toggle("flipped");
   
@@ -142,6 +180,50 @@ flashcard.addEventListener("click", () => {
   flashcard.addEventListener("animationend", () => {
     flashcard.classList.remove("flashcard-bounce");
   }, { once: true });
+});
+
+// --- UPDATED: Bookmark toggle with filteredBookmarks fix ---
+bookmarkBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // prevent card flip
+
+  const card = filteredCards[currentIndex];
+  if (!card) return;
+
+  if (bookmarkedIds.has(card.id)) {
+    // Remove bookmark
+    bookmarkedIds.delete(card.id);
+    showAchievement("🔖 Removed bookmark");
+
+    if (filterBookmarksCheckbox.checked) {
+      // Remove current card from filteredCards
+      filteredCards.splice(currentIndex, 1);
+
+      if (filteredCards.length === 0) {
+        // No bookmarked cards left
+        document.getElementById("card-question").innerText = "No bookmarked cards found.";
+        document.getElementById("card-answer").innerText = "";
+        document.getElementById("progress-counter").innerText = "Card 0 of 0";
+        renderDifficultyStars(0);
+        updateBookmarkButton();
+        saveProgress();
+        return;
+      } else {
+        // Adjust currentIndex if it goes past the end
+        if (currentIndex >= filteredCards.length) {
+          currentIndex = filteredCards.length - 1;
+        }
+        viewedCount = currentIndex + 1; // sync viewedCount with currentIndex
+        showCard(currentIndex);
+      }
+    }
+  } else {
+    // Add bookmark
+    bookmarkedIds.add(card.id);
+    showAchievement("🔖 Added bookmark");
+  }
+
+  updateBookmarkButton();
+  saveProgress();
 });
 
 // Navigation buttons and click animation
@@ -179,6 +261,42 @@ shuffleBtn.addEventListener("click", () => {
   }
 });
 
+const filterBookmarksCheckbox = document.getElementById("filter-bookmarks");
+
+filterBookmarksCheckbox.addEventListener("change", () => {
+  if (filterBookmarksCheckbox.checked) {
+    // Show only bookmarked cards filtered by current category
+    const selectedCategory = categorySelect.value;
+    let cardsToFilter = cards;
+
+    if (selectedCategory !== "all") {
+      cardsToFilter = cards.filter(c => c.cat === selectedCategory);
+    }
+
+    filteredCards = cardsToFilter.filter(c => bookmarkedIds.has(c.id)).slice(0, 100);
+
+  } else {
+    // Show all cards in current category
+    filterCardsByCategory(categorySelect.value);
+    return; // filterCardsByCategory calls showCard and saves progress
+  }
+
+  currentIndex = 0;
+  viewedCount = 0;
+  hasShuffled = false;
+
+  if (filteredCards.length === 0) {
+    document.getElementById("card-question").innerText = "No bookmarked cards found.";
+    document.getElementById("card-answer").innerText = "";
+    document.getElementById("progress-counter").innerText = "Card 0 of 0";
+    renderDifficultyStars(0);
+    updateBookmarkButton();
+    saveProgress();
+  } else {
+    showCard(currentIndex);
+  }
+});
+
 // Category selection
 const categorySelect = document.getElementById("category-select");
 if (categorySelect) {
@@ -206,6 +324,11 @@ fetch("python_flashcards.json")
   .then(r => r.json())
   .then(data => {
     cards = data;
+
+    // Ensure each card has a unique 'id' property for bookmarking
+    cards.forEach((card, idx) => {
+      if (!card.id) card.id = `card-${idx}`;
+    });
 
     const savedCategory = loadProgress();
     if (savedCategory !== "all") {
@@ -305,4 +428,67 @@ document.addEventListener("keydown", (e) => {
       }, { once: true });
       break;
   }
+});
+
+// --- Bookmarked Cards List Feature ---
+
+function getBookmarkedCards() {
+  return cards.filter(card => bookmarkedIds.has(card.id));
+}
+
+function renderBookmarkedCards() {
+  const bookmarkedCards = getBookmarkedCards();
+  bookmarkedCardsList.innerHTML = "";
+
+  if (bookmarkedCards.length === 0) {
+    bookmarkedCardsList.innerHTML = "<p>No bookmarked cards yet.</p>";
+    return;
+  }
+
+  bookmarkedCards.forEach(card => {
+    const cardDiv = document.createElement('div');
+    cardDiv.style.cursor = "pointer";
+    cardDiv.innerHTML = `
+      <strong>Q:</strong> ${card.q}<br>
+      <em>Category:</em> ${card.cat || "General"}
+    `;
+
+    cardDiv.addEventListener('click', () => {
+      bookmarksContainer.style.display = 'none';
+      showBookmarksBtn.style.display = 'block';
+
+      controlsDiv.style.display = 'flex';
+      progressCounter.style.display = 'block';
+
+      // Find index in filteredCards if exists
+      let indexInFiltered = filteredCards.findIndex(c => c.id === card.id);
+      if (indexInFiltered === -1) {
+        // If not in filteredCards, reset filter to "all"
+        filterCardsByCategory("all");
+        indexInFiltered = cards.findIndex(c => c.id === card.id);
+      }
+
+      currentIndex = indexInFiltered;
+      showCard(currentIndex);
+    });
+
+    bookmarkedCardsList.appendChild(cardDiv);
+  });
+}
+
+showBookmarksBtn.addEventListener('click', () => {
+  renderBookmarkedCards();
+  bookmarksContainer.style.display = 'block';
+  showBookmarksBtn.style.display = 'none';
+
+  controlsDiv.style.display = 'none';
+  progressCounter.style.display = 'none';
+});
+
+closeBookmarksBtn.addEventListener('click', () => {
+  bookmarksContainer.style.display = 'none';
+  showBookmarksBtn.style.display = 'block';
+
+  controlsDiv.style.display = 'flex';
+  progressCounter.style.display = 'block';
 });
