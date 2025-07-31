@@ -236,3 +236,34 @@ flashcard.addEventListener("touchend", e => {
     }
   }
 }, {passive: true});
+
+// --- Keyboard navigation ---
+
+document.addEventListener("keydown", (e) => {
+  const tag = e.target.tagName.toLowerCase();
+  // Prevent interfering with inputs or selects
+  if (tag === "input" || tag === "textarea" || tag === "select") return;
+
+  switch (e.key) {
+    case "ArrowRight":
+      e.preventDefault();
+      currentIndex = (currentIndex + 1) % filteredCards.length;
+      showCard(currentIndex);
+      break;
+    case "ArrowLeft":
+      e.preventDefault();
+      currentIndex = (currentIndex - 1 + filteredCards.length) % filteredCards.length;
+      showCard(currentIndex);
+      break;
+    case " ":
+    case "Enter":
+      e.preventDefault();
+      flipSound.play();
+      flashcard.classList.toggle("flipped");
+      flashcard.classList.add("flashcard-bounce");
+      flashcard.addEventListener("animationend", () => {
+        flashcard.classList.remove("flashcard-bounce");
+      }, { once: true });
+      break;
+  }
+});
