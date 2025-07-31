@@ -36,6 +36,7 @@ p {
   max-width: 400px;
   margin: 0 auto;
   align-items: center; /* keep card centered */
+  position: relative; /* for bookmark button absolute positioning */
 }
 
 .flashcard {
@@ -45,7 +46,7 @@ p {
   perspective: 1000px;
   cursor: pointer;
   margin-bottom: 35px;
-  position: relative;
+  position: relative; /* important for bookmark button */
   z-index: 1;
 }
 
@@ -118,8 +119,6 @@ p {
   border-radius: 6px 0 0 6px;
   transition: width 0.3s ease-in-out;
 }
-
-
 
 .controls {
   display: flex;
@@ -196,6 +195,26 @@ button.click-animate {
   cursor: default;
 }
 
+/* Bookmark button inside flashcard */
+#bookmark-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 28px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  color: gold;
+  transition: transform 0.2s, color 0.2s;
+  z-index: 10;
+}
+
+#bookmark-btn.bookmarked {
+  color: orange;
+  transform: scale(1.3);
+}
+
 /* Swipe animations */
 @keyframes slideOutLeft {
   from { transform: translateX(0); opacity: 1; }
@@ -268,6 +287,28 @@ button.click-animate {
   #progress-counter {
     margin-top: 20px;
   }
+}
+
+#bookmarks-container {
+  background: #f0f8ff;
+  border: 2px solid #4B8BBE;
+  border-radius: 12px;
+  padding: 15px;
+  box-shadow: 0 4px 12px rgba(75, 139, 190, 0.3);
+}
+
+#bookmarked-cards-list > div {
+  background: #fff;
+  border: 1px solid #219EBC;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#bookmarked-cards-list > div:hover {
+  background-color: #d0e9ff;
 }
 
 
