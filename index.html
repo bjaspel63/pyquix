@@ -2,10 +2,96 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <title>Pyquix Flashcards</title>
   <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Quick CSS to position bookmark button inside flashcard */
+    .flashcard-container {
+      position: relative;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    #bookmark-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 28px;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      user-select: none;
+      color: gold;
+      transition: transform 0.2s ease;
+      z-index: 10;
+    }
+    #bookmark-btn.bookmarked {
+      color: orange;
+      transform: scale(1.3);
+    }
+    /* Place checkbox filter below controls */
+    #filter-bookmarks-container {
+      margin-top: 16px;
+      text-align: center;
+      font-size: 0.9em;
+    }
+
+    /* Bookmarks list container styles */
+    #bookmarks-container {
+      display: none;
+      max-width: 400px;
+      margin: 20px auto;
+      text-align: left;
+      background: #f0f8ff;
+      border: 2px solid #4B8BBE;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 4px 8px rgba(75, 139, 190, 0.2);
+    }
+    #bookmarks-container h2 {
+      margin-top: 0;
+      color: #219EBC;
+    }
+    #bookmarked-cards-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    #bookmarked-cards-list div {
+      padding: 10px;
+      border-bottom: 1px solid #219EBC;
+      cursor: pointer;
+      border-radius: 8px;
+      margin-bottom: 6px;
+      background: white;
+      transition: background-color 0.2s;
+    }
+    #bookmarked-cards-list div:hover {
+      background-color: #dbeefd;
+    }
+    #close-bookmarks-btn {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: #4B8BBE;
+      color: white;
+      cursor: pointer;
+      font-size: 1em;
+      width: 100%;
+    }
+
+    #show-bookmarks-btn {
+      margin-top: 16px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
+      background: #219EBC;
+      color: white;
+      cursor: pointer;
+      max-width: 400px;
+      width: 100%;
+      font-size: 1em;
+    }
+  </style>
 </head>
 <body>
   <h1>🐍 Pyquix Flashcards</h1>
@@ -25,7 +111,6 @@
   <!-- Difficulty stars container -->
   <div id="difficulty-stars" style="font-size: 1.5em; color: gold; margin-bottom: 8px;"></div>
 
-
   <div class="flashcard-container">
     <div class="flashcard" id="flashcard">
       <div class="flashcard-inner">
@@ -42,14 +127,34 @@
       <button id="next">Next ➡</button>
     </div>
 
+    <!-- Filter for bookmarked cards -->
+    <div id="filter-bookmarks-container">
+      <label>
+        <input type="checkbox" id="filter-bookmarks" />
+        Show only bookmarked cards
+      </label>
+    </div>
+
     <div id="achievement" style="margin-top: 20px; font-weight: bold; color: #4B8BBE; min-height: 24px;"></div>
+
+    <!-- Button to open bookmarks list -->
+    <button id="show-bookmarks-btn" aria-label="Show Bookmarked Cards">
+      📑 Show Bookmarked Cards
+    </button>
+
+    <!-- Bookmarks list container -->
+    <div id="bookmarks-container" aria-label="Bookmarked Cards List">
+      <h2>Your Bookmarked Cards</h2>
+      <div id="bookmarked-cards-list"></div>
+      <button id="close-bookmarks-btn" aria-label="Close Bookmarked Cards List">Close Bookmarks</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
 
-<footer style="text-align: center; margin-top: 40px; padding: 12px; font-size: 0.9em; color: #666;">
-  &copy; 2025 Pyquix Flashcards. Personal Project by Jaspel Bosales.
-</footer>
+  <footer style="text-align: center; margin-top: 40px; padding: 12px; font-size: 0.9em; color: #666;">
+    &copy; 2025 Pyquix Flashcards. Personal Project by Jaspel Bosales.
+  </footer>
 
 </body>
 </html>
