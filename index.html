@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pyquix Flashcards</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>🐍 Pyquix Flashcards</h1>
+  <p>Click the card to flip and see the answer!</p>
+
+  <!-- Category selector dropdown for kids to pick category -->
+  <label for="category-select" style="font-weight: bold; margin-bottom: 6px; display: block;">
+    Choose a category:
+  </label>
+  <select id="category-select" 
+          style="padding: 8px 12px; font-size: 1em; border-radius: 8px; border: 2px solid #4B8BBE; margin-bottom: 12px; max-width: 400px; width: 300px;">
+    <option value="all" selected>All Categories</option>
+  </select>
+
+  <div class="category-label" id="card-category">Category</div>
+  
+  <!-- Difficulty stars container -->
+  <div id="difficulty-stars" style="font-size: 1.5em; color: gold; margin-bottom: 8px;"></div>
+
+
+  <div class="flashcard-container">
+    <div class="flashcard" id="flashcard">
+      <div class="flashcard-inner">
+        <div class="flashcard-front" id="card-question">Loading...</div>
+        <div class="flashcard-back" id="card-answer"></div>
+      </div>
+    </div>
+
+    <div id="progress-counter">Card 0 of 0</div>
+
+    <div class="controls">
+      <button id="prev">⬅ Prev</button>
+      <button id="shuffle">🔀 Shuffle</button>
+      <button id="next">Next ➡</button>
+    </div>
+
+    <div id="achievement" style="margin-top: 20px; font-weight: bold; color: #4B8BBE; min-height: 24px;"></div>
+  </div>
+
+  <script src="script.js"></script>
+
+<footer style="text-align: center; margin-top: 40px; padding: 12px; font-size: 0.9em; color: #666;">
+  &copy; 2025 Pyquix Flashcards. Personal Project by Jaspel Bosales.
+</footer>
+
+</body>
+</html>
