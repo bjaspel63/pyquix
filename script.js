@@ -135,7 +135,8 @@ function renderDifficultyStars(difficulty) {
   const filledStars = "★".repeat(starsCount);
   const emptyStars = "☆".repeat(5 - starsCount);
   starContainer.textContent = filledStars + emptyStars;
-  labelContainer.textContent = 'Difficulty Level: ${label}';
+  labelContainer.textContent = `Difficulty Level: ${label}`;
+
 }
 
 // Update bookmark button UI depending on current card
