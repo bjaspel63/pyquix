@@ -117,13 +117,21 @@ function checkAchievements() {
 // Render difficulty stars based on difficulty string
 function renderDifficultyStars(difficulty) {
   const starContainer = document.getElementById("difficulty-stars");
-  if (!starContainer) return;
+  const labelContainer = document.getElementById("difficulty-label");
+  if (!starContainer || !labelContainer) return;
 
   let starsCount = 0;
-  if (difficulty === 1) starsCount = 1;
-  else if (difficulty === 2) starsCount = 3;
-  else if (difficulty === 3) starsCount = 5;
-
+  let label = "Unknown"
+  if (difficulty === 1) {
+    starsCount = 1;
+    label="Easy";
+  } else if (difficulty === 2) {
+    starsCount = 3;
+    label="Medium";
+  }else if (difficulty === 3) {
+    starsCount = 5;
+    label="Hard";
+  }
   const filledStars = "★".repeat(starsCount);
   const emptyStars = "☆".repeat(5 - starsCount);
   starContainer.textContent = filledStars + emptyStars;
