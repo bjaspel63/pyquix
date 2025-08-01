@@ -261,16 +261,18 @@ button.click-animate {
 }
 
 #difficulty-stars {
-  font-size: 1.3rem;
-  color: gold;
-  margin-top: 2px;
+  font-size: 1.5rem;
+  text-align: center;
+  margin-bottom: 2px; /* small gap */
 }
 
 #difficulty-label {
-  font-size: 0.9rem;
-  color: #555;
-  margin-top: -2px;
+  font-size: 1rem;
+  text-align: center;
+  margin-top: -2px; /* move it closer to stars */
+  color: #333;
 }
+
 
 /* Landscape mode layout */
 @media (orientation: landscape) {
