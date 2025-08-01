@@ -35,7 +35,7 @@ p {
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
-  margin-top: -5px;
+  margin-top: -20px;
   align-items: center; /* keep card centered */
   position: relative; /* for bookmark button absolute positioning */
 }
