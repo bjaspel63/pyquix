@@ -260,6 +260,18 @@ button.click-animate {
   padding: 10px;
 }
 
+#difficulty-stars {
+  font-size: 1.3rem;
+  color: gold;
+  margin-top: 5px;
+}
+
+#difficulty-label {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 2px;
+}
+
 /* Landscape mode layout */
 @media (orientation: landscape) {
   #app-container {
