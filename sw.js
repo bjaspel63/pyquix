@@ -3,7 +3,7 @@ const FILES_TO_CACHE = [
   "/",
   "/index.html",
   "/style.css",
-  "/app.js",           // Your main JS file
+  "/app.js",           
   "/python_flashcards.json",
   "/flip-sound.mp3",
   "/achievement-sound.mp3",
