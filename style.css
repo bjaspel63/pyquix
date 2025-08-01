@@ -269,7 +269,7 @@ button.click-animate {
 #difficulty-label {
   font-size: 0.9rem;
   color: #555;
-  margin-top: 2px;
+  margin-top: -2px;
 }
 
 /* Landscape mode layout */
