@@ -270,8 +270,7 @@ button.click-animate {
 #difficulty-label {
   font-size: 1rem;
   text-align: center;
-  margin-top: -12px; /* move it closer to stars */
-  color: #333;
+  margin-bottom: 16px;
 }
 
 
